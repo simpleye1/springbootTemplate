@@ -102,9 +102,9 @@ task jacocoAllTestReport(type: JacocoReport) {
     shouldRunAfter check
     sourceSets sourceSets.main
     executionData test, apiTest
-    reports {
-        xml.enabled true
-    }
+//    reports {
+//        xml.enabled true
+//    }
     afterEvaluate {
         classDirectories.from = files(classDirectories.files.collect {
             fileTree(dir: it, exclude: jacocoExcludes)

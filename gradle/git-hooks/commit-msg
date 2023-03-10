@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-COMMIT_MSG_MAX_LENGTH = 141
+COMMIT_MSG_MAX_LENGTH = 999
 COMMIT_FORMAT_POLICY_TAG = "[COMMIT_FORMAT_POLICY] ERROR::"
 COMMIT_ERROR_BANNER = "=============================================================================="
 $COMMIT_FORMAT_REGEX = /^(chore|docs|feat|fix|refactor|style|test)\: [\sA-z0-9\-\.,_\"]+$/
