@@ -1,0 +1,5 @@
+dockerCompose {
+    useComposeFiles = ['./gradle/docker-compose/mysql-docker-compose.yml']
+}
+
+bootRun.dependsOn composeUp

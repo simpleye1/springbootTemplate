@@ -1,0 +1,152 @@
+apply plugin: "jacoco"
+
+ext {
+    jacocoLineMin = 0.7
+    jacocoBranchMin = 0.7
+
+    jacocoExcludes = [
+            "**/archunit",
+            "**/com/ysg/servicetemplate/BootstrapApplication*",
+            "**/com/ysg/servicetemplate/**/*Exception.class",
+            "**/com/ysg/servicetemplate/adapter/inbound/rest/handler/**",
+            "**/com/ysg/servicetemplate/**/*MapperImpl*",
+            "**/com/ysg/servicetemplate/**/*Mapper.class",
+            "**/com/ysg/servicetemplate/**/*Command.class",
+            "**/com/ysg/servicetemplate/**/*DTO.class",
+            "**/com/ysg/servicetemplate/**/*PO.class",
+            "**/com/ysg/servicetemplate/**/Q*.class",
+            "**/com/ysg/servicetemplate/common/**"
+    ]
+}
+
+jacocoTestReport {
+    group = 'other'
+    shouldRunAfter test
+    afterEvaluate {
+        classDirectories.from = files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: jacocoExcludes)
+        })
+    }
+}
+
+jacocoTestCoverageVerification {
+    group = 'other'
+    shouldRunAfter test
+    executionData test
+    violationRules {
+        rule {
+            element = 'BUNDLE'
+            limit {
+                counter = 'INSTRUCTION'
+                minimum = jacocoLineMin
+            }
+        }
+
+        rule {
+            element = 'BUNDLE'
+            limit {
+                counter = 'BRANCH'
+                minimum = jacocoBranchMin
+            }
+        }
+    }
+    afterEvaluate {
+        classDirectories.from = files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: jacocoExcludes)
+        })
+    }
+}
+
+task jacocoApiTestReport(type: JacocoReport) {
+    shouldRunAfter apiTest
+    sourceSets sourceSets.main
+    executionData apiTest
+    afterEvaluate {
+        classDirectories.from = files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: jacocoExcludes)
+        })
+    }
+}
+
+task jacocoApiTestCoverageVerification(type: JacocoCoverageVerification) {
+    shouldRunAfter apiTest
+    executionData apiTest
+    sourceDirectories.from = files(sourceSets.main.allSource.srcDirs)
+    classDirectories.from = files(sourceSets.main.output)
+    afterEvaluate {
+        classDirectories.from = files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: jacocoExcludes)
+        })
+    }
+    violationRules {
+        rule {
+            element = 'BUNDLE'
+            limit {
+                counter = 'INSTRUCTION'
+                minimum = jacocoLineMin
+            }
+        }
+
+        rule {
+            element = 'BUNDLE'
+            limit {
+                counter = 'BRANCH'
+                minimum = jacocoBranchMin
+            }
+        }
+    }
+}
+
+task jacocoAllTestReport(type: JacocoReport) {
+    group = 'verification'
+    shouldRunAfter check
+    sourceSets sourceSets.main
+    executionData test, apiTest
+    reports {
+        xml.enabled true
+    }
+    afterEvaluate {
+        classDirectories.from = files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: jacocoExcludes)
+        })
+    }
+}
+
+task jacocoAllTestCoverageVerification(type: JacocoCoverageVerification) {
+    group = 'verification'
+    shouldRunAfter check
+    executionData test, apiTest
+    sourceDirectories.from = files(sourceSets.main.allSource.srcDirs)
+    classDirectories.from = files(sourceSets.main.output)
+
+    afterEvaluate {
+        classDirectories.from = files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: jacocoExcludes)
+        })
+    }
+
+
+    violationRules {
+        rule {
+            element = 'BUNDLE'
+            limit {
+                counter = 'INSTRUCTION'
+                minimum = jacocoLineMin
+            }
+        }
+
+        rule {
+            element = 'BUNDLE'
+            limit {
+                counter = 'BRANCH'
+                minimum = jacocoBranchMin
+            }
+        }
+    }
+}
+
+jacocoAllTestCoverageVerification.dependsOn jacocoAllTestReport
+jacocoAllTestReport.dependsOn test
+jacocoAllTestReport.dependsOn apiTest
+check.dependsOn jacocoAllTestReport
+check.dependsOn jacocoAllTestCoverageVerification

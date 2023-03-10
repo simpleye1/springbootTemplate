@@ -1,0 +1,17 @@
+sonarqube {
+    properties {
+        property 'sonar.projectName', rootProject.name
+        property 'sonar.junit.reportPaths',
+                "$buildDir/test-results/apiTest, $buildDir/test-results/test"
+        property 'sonar.host.url', 'http://localhost:9000'
+        property 'sonar.login', 'admin'
+        property 'sonar.password', 'admin'
+
+        //properties["sonar.tests"] += sourceSets.apiTest.allSource.srcDirs
+         property 'sonar.tests', ['src/apiTest', 'src/test']
+        // property "sonar.coverage.exclusions", jacocoExcludes
+        properties["sonar.coverage.exclusions"] = jacocoExcludes
+    }
+}
+project.tasks["sonarqube"].dependsOn jacocoAllTestReport
+

@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: template
+  profiles:
+    active: ${PAAS_NAMESPACE:local}
+  cloud:
+    kubernetes:
+      reload:
+        enabled: true
+        mode: event
+        strategy: shutdown
+      config:
+        enableApi: true
+        enabled: true
+        sources:
+          - name: ${spring.application.name}
+            namespace: ${spring.profiles.active}
+logging:
+  file:
+    name: /tmp/${spring.application.name}
+management:
+  endpoint:
+    health:
+      show-details: always
+    restart:
+      enabled: true
+
+
